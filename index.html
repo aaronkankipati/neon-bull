@@ -546,7 +546,7 @@ function renderKPIs(d){
   const ur=d.unrealisedPnl||0;
   urEl.textContent=fINR(ur);
   urEl.className="kpi-value "+(ur>=0?"bull":"bear");
-  document.getElementById("kpiUnrealisedSub").textContent=(ur>=0?"+":"")+fPct(d.holdingsValue>0?(ur/d.holdingsValue*100):0)+" on invested";
+  document.getElementById("kpiUnrealisedSub").textContent=fPct(d.holdingsValue>0?(ur/d.holdingsValue*100):0)+" on invested";
   const n=d.positions?.length||0;
   document.getElementById("kpiPositions").textContent=n+" position"+(n!==1?"s":"");
   // Today's P&L — from latest snapshot
