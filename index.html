@@ -311,6 +311,17 @@ canvas{display:block;width:100%!important}
     <div class="hero-value" id="heroValue">₹—</div>
     <div class="hero-pill up" id="heroPct">—</div>
     <div class="hero-start">Started at ₹10,000</div>
+    <div class="hero-sessions" id="heroSessions" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--sub)">
+        <div class="sess-dot" id="dotM"></div><span id="sessM">Morning</span>
+      </div>
+      <div style="width:1px;height:12px;background:var(--border2)"></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--sub)">
+        <div class="sess-dot" id="dotA"></div><span id="sessA">Afternoon</span>
+      </div>
+      <div style="width:1px;height:12px;background:var(--border2)"></div>
+      <div class="mkt-pill" id="sessMarket" style="font-size:.62rem">—</div>
+    </div>
   </div>
 
   <!-- ROW 1: Current State -->
@@ -414,40 +425,6 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
-  <!-- COLLAPSIBLE: Today's Sessions -->
-  <div class="collapse-section" id="sec-session">
-    <div class="collapse-trigger" onclick="toggleSection('sec-session')">
-      <div class="collapse-left">
-        <span class="collapse-icon">⏰</span>
-        <div>
-          <div class="collapse-title">Today's Sessions</div>
-          <div class="collapse-meta" id="sessionMeta">—</div>
-        </div>
-      </div>
-      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="collapse-body">
-      <div class="collapse-inner">
-        <div class="session-body">
-          <div class="session-row">
-            <div class="sess-dot" id="dotM"></div>
-            <div class="sess-text">Morning Open</div>
-            <div class="sess-time">9:30 AM IST</div>
-          </div>
-          <div class="session-row">
-            <div class="sess-dot" id="dotA"></div>
-            <div class="sess-text">Afternoon Review</div>
-            <div class="sess-time">1:30 PM IST</div>
-          </div>
-          <div class="session-row">
-            <div class="sess-text" style="font-size:.74rem;color:var(--sub)" id="sessDate">—</div>
-            <div class="mkt-pill" id="sessMarket">—</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- COLLAPSIBLE: Open Positions -->
   <div class="collapse-section" id="sec-positions">
     <div class="collapse-trigger" onclick="toggleSection('sec-positions')">
@@ -482,25 +459,6 @@ canvas{display:block;width:100%!important}
     <div class="collapse-body">
       <div class="collapse-inner" id="tradesCard">
         <div class="empty"><span class="empty-icon">📋</span>No trades yet.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COLLAPSIBLE: Session Log -->
-  <div class="collapse-section" id="sec-log">
-    <div class="collapse-trigger" onclick="toggleSection('sec-log')">
-      <div class="collapse-left">
-        <span class="collapse-icon">📓</span>
-        <div>
-          <div class="collapse-title">Session Log</div>
-          <div class="collapse-meta" id="logCount">—</div>
-        </div>
-      </div>
-      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="collapse-body">
-      <div class="collapse-inner" id="logCard">
-        <div class="empty"><span class="empty-icon">📓</span>Sessions will appear here.</div>
       </div>
     </div>
   </div>
@@ -730,14 +688,13 @@ function renderStats(exp,realizedPnl,totalPnl){
 
 function renderSession(s){
   const dotM=document.getElementById("dotM"),dotA=document.getElementById("dotA");
-  dotM.className="sess-dot "+(s.morningDone?"sess-done":s.nextSession==="morning"?"sess-next":"sess-pend");
-  dotA.className="sess-dot "+(s.afternoonDone?"sess-done":s.nextSession==="afternoon"?"sess-next":"sess-pend");
-  document.getElementById("sessDate").textContent=s.date||"—";
+  if(dotM) dotM.className="sess-dot "+(s.morningDone?"sess-done":s.nextSession==="morning"?"sess-next":"sess-pend");
+  if(dotA) dotA.className="sess-dot "+(s.afternoonDone?"sess-done":s.nextSession==="afternoon"?"sess-next":"sess-pend");
+  const sessM=document.getElementById("sessM"),sessA=document.getElementById("sessA");
+  if(sessM) sessM.textContent=s.morningDone?"Morning ✓":"Morning 9:30";
+  if(sessA) sessA.textContent=s.afternoonDone?"Afternoon ✓":"Afternoon 1:30";
   const mkt=document.getElementById("sessMarket");
-  mkt.textContent=s.marketOpen?"● Open":"● Closed";
-  mkt.className="mkt-pill "+(s.marketOpen?"mkt-open":"mkt-closed");
-  const done=[s.morningDone,s.afternoonDone].filter(Boolean).length;
-  document.getElementById("sessionMeta").textContent=done+" of 2 sessions done today";
+  if(mkt){mkt.textContent=s.marketOpen?"● Open":"● Closed";mkt.className="mkt-pill "+(s.marketOpen?"mkt-open":"mkt-closed");}
 }
 
 function renderAI(ins){
@@ -835,20 +792,7 @@ function renderTrades(trades){
   }).join("");
 }
 
-function renderLog(insights){
-  const card=document.getElementById("logCard"),cnt=document.getElementById("logCount");
-  cnt.textContent=(insights?.length||0)+" sessions";
-  if(!insights?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📓</span>Sessions will appear here.</div>';return;}
-  card.innerHTML=insights.slice(0,10).map(ins=>`
-    <div class="log-item">
-      <div class="log-top">
-        <span class="log-date">${ins.date}</span>
-        <span class="pill ${ins.session==="morning"?"pill-morn":"pill-aft"}">${ins.session==="morning"?"Morning":"Afternoon"}</span>
-        <span class="pill pill-t">${ins.tradesExecuted||0} trades</span>
-      </div>
-      <div class="log-body">${ins.marketOutlook||"—"}</div>
-    </div>`).join("");
-}
+
 
 // ── PIN ───────────────────────────────────────────────────────
 let authorUnlocked=false;
@@ -893,8 +837,8 @@ async function loadAll(){
   if(btn){btn.textContent="Refreshing…";btn.className="refresh-btn loading";btn.disabled=true;}
   const hero=document.getElementById("heroCard");
   try{
-    const [portRes,insRes]=await Promise.all([fetch(API+"/portfolio"),fetch(API+"/insights?limit=14")]);
-    const port=await portRes.json(),insights=await insRes.json();
+    const portRes=await fetch(API+"/portfolio");
+    const port=await portRes.json();
     if(port.paused){document.getElementById("pausedBanner").style.display="block";document.getElementById("pausedReason").textContent=port.pauseReason||"Experiment concluded.";}
     if(port.todaySession&&!port.todaySession.tradingDay){
       document.getElementById("closedBanner").style.display="block";
@@ -905,7 +849,7 @@ async function loadAll(){
     renderHero(port);renderKPIs(port);
     renderStats(port.experiment,port.realizedPnl,port.totalPnl);
     renderSession(port.todaySession||{});renderAI(port.insight);
-    renderPositions(port.positions||[]);renderTrades(port.recentTrades||[]);renderLog(insights);
+    renderPositions(port.positions||[]);renderTrades(port.recentTrades||[]);
     if(port.snapshots?.length){
       window._chartData={labels:port.snapshots.map(s=>s.date),values:port.snapshots.map(s=>s.totalValue)};
       document.getElementById("chartMeta").textContent=fPct(port.totalPnlPct)+" total return";
