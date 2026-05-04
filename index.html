@@ -212,6 +212,10 @@ canvas{display:block;width:100%!important}
 .empty{padding:28px 16px;text-align:center;color:var(--sub);font-size:.78rem;line-height:2}
 .empty-icon{font-size:1.6rem;display:block;margin-bottom:8px}
 .setup{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--r);padding:14px;font-size:.78rem;color:var(--gold);display:none}
+@keyframes refresh-flash{0%{opacity:1}30%{opacity:.4}60%{opacity:1}100%{opacity:1}}
+.refreshing{animation:refresh-flash .5s ease-in-out}
+.refresh-btn.loading{color:var(--sub);border-color:var(--border);cursor:default}
+.refresh-btn.done{color:var(--neon);border-color:var(--neon-border)}
 </style>
 </head>
 <body>
@@ -266,7 +270,7 @@ canvas{display:block;width:100%!important}
   </svg>
   <div style="display:flex;align-items:center;gap:10px">
     <div class="live"><div class="live-dot"></div>LIVE</div>
-    <button class="refresh-btn" onclick="loadAll()">Refresh</button>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
   </div>
 </div>
 
@@ -684,20 +688,52 @@ function renderPositions(positions){
   cnt.textContent=(positions?.length||0)+" open";
   if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>';return;}
   card.innerHTML=positions.map(p=>{
-    const pc=p.unrealisedPnl>=0?"bull":"bear",dc=p.changePct>=0?"bull":"bear";
+    const hasGain=p.unrealisedPnl>0.005,hasLoss=p.unrealisedPnl<-0.005;
+    const gainCls=hasGain?"bull":hasLoss?"bear":"";
+    // Plain-English gain line
+    let gainLine;
+    if(hasGain)        gainLine=`<span class="bull">+${fINR(p.unrealisedPnl)} (${fPct(p.unrealisedPnlPct)})</span>`;
+    else if(hasLoss)   gainLine=`<span class="bear">${fINR(p.unrealisedPnl)} (${fPct(p.unrealisedPnlPct)})</span>`;
+    else               gainLine=`<span style="color:var(--sub)">No gain yet</span>`;
     return`<div class="pos-item">
       <div class="pos-top">
         <div class="pos-label">${p.label}</div>
-        <div class="pos-pnl ${pc}">${fINR(p.unrealisedPnl)} <span style="font-size:.74rem">(${fPct(p.unrealisedPnlPct)})</span></div>
+        <div class="pos-pnl">${gainLine}</div>
       </div>
       <div class="pos-row">
-        <span>${p.qty} share${p.qty!==1?"s":""} · Avg ${fINR(p.avgPrice)}</span>
-        <span>Now ${fINR(p.currentPrice)} <span class="${dc}" style="font-size:.66rem">${fPct(p.changePct)} today</span></span>
+        <span>Bought at ${fINR(p.avgPrice)}</span>
+        <span>Now ${fINR(p.currentPrice)}</span>
       </div>
-      <div class="pos-formula">(${fINR(p.currentPrice)} − ${fINR(p.avgPrice)}) × ${p.qty} shares</div>
-      <div class="pos-sl">Stop-loss at ${fINR(p.stopLossLevel)}</div>
+      <div class="pos-sl">Auto-sells below ${fINR(p.stopLossLevel)}</div>
     </div>`;
   }).join("");
+}
+
+function plainReason(reason, action, isStop){
+  if(isStop) return "Auto-sold — hit the safety exit price";
+  if(!reason||reason==="—") return "—";
+  const r=reason.toLowerCase();
+  // BUY signals
+  // SELL signals first to avoid misclassification
+  if(r.includes("stop loss")||r.includes("stop-loss")||r.includes("approaching stop")) return "Getting too close to the safety exit";
+  if(r.includes("overbought")||r.includes("rsi 8")||r.includes("rsi 9")||r.includes("rsi 7")) return "Stock looked too expensive to hold";
+  if(r.includes("target")||r.includes("profit")) return "Taking profit at target price";
+  if(r.includes("reduce")||r.includes("exposure")) return "Reducing risk on this position";
+  // BUY signals
+  if(r.includes("oversold")||r.includes("rsi 1")||r.includes("rsi 2")||r.includes("deeply")) return "Stock looked heavily discounted";
+  if(r.includes("recovery")||r.includes("sma5>sma20")||r.includes("sma5 >")) return "Strong recovery signal spotted";
+  if(r.includes("value")||r.includes("30d low")||r.includes("deep value")) return "Trading near its lowest recent price";
+  if(r.includes("crossover")||r.includes("crossing")) return "Upward trend signal spotted";
+  if(r.includes("reversal")||r.includes("potential reversal")) return "Spotted a potential reversal";
+  if(r.includes("volume")||r.includes("vol ")) return "High trading volume confirmed the move";
+  if(r.includes("momentum")) return "Strong momentum spotted";
+  // Fallback — clean up the raw reason
+  return reason.split(".")[0]
+    .replace(/rsi\s*[\d.]+/gi,"")
+    .replace(/sma\d+/gi,"")
+    .replace(/\[stock\]/gi,"position")
+    .replace(/,?\s{2,}/g," ")
+    .trim().slice(0,60)||"—";
 }
 
 function renderTrades(trades){
@@ -706,22 +742,26 @@ function renderTrades(trades){
   if(!trades?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📋</span>No trades yet.</div>';return;}
   card.innerHTML=trades.slice(0,12).map(t=>{
     const isStop=t.autoStopLoss;
-    const actCls=isStop?"trade-stop":t.action==="BUY"?"trade-buy":"trade-sell";
-    const actTxt=isStop?"AUTO SELL":t.action;
-    const sc=t.session==="morning"?"sess-m":"sess-a",sl=t.session==="morning"?"MRN":"AFT";
-    const feeStr=t.charges?` · Fees ${fINR(t.charges)}`:"";
-    const netStr=t.action==="SELL"&&t.netProceeds?` · Net ${fINR(t.netProceeds)}`:"";
-    const reason=(t.reason||"—").split(".")[0].replace(/\[stock\]/g,"position").slice(0,80);
+    const isBuy=t.action==="BUY";
+    const actCls=isStop?"trade-stop":isBuy?"trade-buy":"trade-sell";
+    const actTxt=isStop?"AUTO SOLD":isBuy?"BOUGHT":"SOLD";
+    const session=t.session==="morning"?"Morning":"Afternoon";
+    const sc=t.session==="morning"?"sess-m":"sess-a";
+    const reason=plainReason(t.reason||"",t.action,isStop);
+    // Amount line
+    const amtLine=isBuy
+      ?`Spent ${fINR(t.total)} · Fees ${fINR(t.charges||0)}`
+      :`Received ${fINR(t.netProceeds||t.total)} after fees`;
     return`<div class="trade-item">
       <div class="trade-top">
-        <div style="display:flex;align-items:center;gap:7px">
+        <div style="display:flex;align-items:center;gap:8px">
           <span class="trade-action ${actCls}">${actTxt}</span>
-          <span class="trade-label ${sc}">${sl}</span>
+          <span class="trade-label ${sc}">${session}</span>
           <span style="font-size:.66rem;color:var(--sub)">${t.symbol||""}</span>
         </div>
-        <div class="trade-amount">${fINR(t.total)}${feeStr}</div>
       </div>
-      <div class="trade-meta">${t.date||"—"}${netStr} · ${reason}</div>
+      <div style="font-size:.78rem;color:var(--sub);margin:3px 0">${amtLine}</div>
+      <div style="font-size:.78rem;color:var(--text);margin-top:2px">${reason}</div>
     </div>`;
   }).join("");
 }
@@ -780,6 +820,9 @@ document.getElementById("pinInput").addEventListener("keydown",e=>{if(e.key==="E
 
 // ── MAIN ──────────────────────────────────────────────────────
 async function loadAll(){
+  const btn=document.getElementById("refreshBtn");
+  if(btn){btn.textContent="Refreshing…";btn.className="refresh-btn loading";btn.disabled=true;}
+  const hero=document.getElementById("heroCard");
   try{
     const [portRes,insRes]=await Promise.all([fetch(API+"/portfolio"),fetch(API+"/insights?limit=14")]);
     const port=await portRes.json(),insights=await insRes.json();
@@ -805,6 +848,14 @@ async function loadAll(){
     b.innerHTML="<strong>⚠ Connection error</strong> — "+e.message;
   }
   document.getElementById("loader").style.display="none";
+  // Flash hero card so user sees data updated
+  const heroEl=document.getElementById("heroCard");
+  if(heroEl){heroEl.classList.add("refreshing");setTimeout(()=>heroEl.classList.remove("refreshing"),600);}
+  // Show done state on button then reset
+  if(btn){
+    btn.textContent="✓ Updated";btn.className="refresh-btn done";btn.disabled=false;
+    setTimeout(()=>{btn.textContent="Refresh";btn.className="refresh-btn";},2000);
+  }
 }
 loadAll();
 setInterval(loadAll,5*60*1000);
