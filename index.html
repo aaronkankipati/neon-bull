@@ -88,14 +88,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .hero-start{font-size:.75rem;color:var(--sub);margin-top:10px}
 
 /* ── 2-col KPI row ── */
-.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 14px}
 .kpi-label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:6px}
 .kpi-value{font-family:var(--disp);font-size:1.7rem;letter-spacing:.04em;line-height:1}
 .kpi-sub{font-size:.72rem;color:var(--sub);margin-top:5px}
 
 /* ── Stat row (3-up) ── */
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center}
 .stat-val{font-family:var(--disp);font-size:1.6rem;letter-spacing:.04em;line-height:1;margin-bottom:4px}
 .stat-label{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sub)}
@@ -163,6 +163,7 @@ canvas{display:block;width:100%!important}
 .pos-pnl{font-family:var(--disp);font-size:1rem}
 .pos-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--sub);margin-top:2px}
 .pos-sl{font-size:.72rem;color:var(--bear);margin-top:4px}
+.pos-formula{font-size:.68rem;color:var(--sub);margin-top:3px;font-family:var(--mono,'Courier New',monospace);opacity:.7}
 
 /* ── Author section (PIN-gated) ── */
 .author-card{background:var(--card);border:1px solid var(--gold)22;border-radius:var(--r);overflow:hidden}
@@ -319,6 +320,11 @@ code{background:rgba(0,0,0,.4);padding:1px 6px;border-radius:4px;font-family:mon
       <div class="kpi-sub" id="kpiPositions">— positions</div>
     </div>
     <div class="kpi">
+      <div class="kpi-label">Unrealised P&amp;L</div>
+      <div class="kpi-value" id="kpiUnrealised">₹—</div>
+      <div class="kpi-sub" id="kpiUnrealisedSub">Open positions gain/loss</div>
+    </div>
+    <div class="kpi">
       <div class="kpi-label">Charges Paid</div>
       <div class="kpi-value bear" id="kpiCharges">₹—</div>
       <div class="kpi-sub">⚡ Simulated to mirror real brokerage</div>
@@ -327,6 +333,11 @@ code{background:rgba(0,0,0,.4);padding:1px 6px;border-radius:4px;font-family:mon
       <div class="kpi-label">Today's P&amp;L</div>
       <div class="kpi-value" id="kpiDayPnl">₹—</div>
       <div class="kpi-sub" id="kpiDayPnlSub">Day — of experiment</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Realised P&amp;L</div>
+      <div class="kpi-value" id="statRealized">₹—</div>
+      <div class="kpi-sub" id="statRealizedSub">From closed trades</div>
     </div>
   </div>
 
@@ -343,10 +354,6 @@ code{background:rgba(0,0,0,.4);padding:1px 6px;border-radius:4px;font-family:mon
     <div class="stat">
       <div class="stat-val bear" id="statLoss">—</div>
       <div class="stat-label">Loss Days</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="statRealized">—</div>
-      <div class="stat-label">Realised P&amp;L</div>
     </div>
   </div>
 
@@ -534,6 +541,12 @@ function renderKPIs(d){
   document.getElementById("kpiCash").textContent=fINR(d.cash);
   document.getElementById("kpiCashSub").textContent=((d.cash/d.initialBalance)*100).toFixed(0)+"% of capital";
   document.getElementById("kpiInvested").textContent=fINR(d.holdingsValue);
+  document.getElementById("kpiPositions").textContent=(d.positions?.length||0)+" positions";
+  const urEl=document.getElementById("kpiUnrealised");
+  const ur=d.unrealisedPnl||0;
+  urEl.textContent=fINR(ur);
+  urEl.className="kpi-value "+(ur>=0?"bull":"bear");
+  document.getElementById("kpiUnrealisedSub").textContent=(ur>=0?"+":"")+fPct(d.holdingsValue>0?(ur/d.holdingsValue*100):0)+" on invested";
   const n=d.positions?.length||0;
   document.getElementById("kpiPositions").textContent=n+" position"+(n!==1?"s":"");
   // Today's P&L — from latest snapshot
@@ -555,7 +568,9 @@ function renderStats(exp, realizedPnl){
   const rpEl=document.getElementById("statRealized");
   const rp=realizedPnl||0;
   rpEl.textContent=fINR(rp);
-  rpEl.className="stat-val "+(rp>=0?"bull":"bear");
+  rpEl.className="kpi-value "+(rp>=0?"bull":"bear");
+  const rpSub=document.getElementById("statRealizedSub");
+  if(rpSub) rpSub.textContent=rp===0?"No closed trades yet":(rp>=0?"Profit from sells":"Loss from sells");
 }
 
 function renderSession(s){
@@ -590,17 +605,19 @@ function renderPositions(positions){
   cnt.textContent=(positions?.length||0)+" open";
   if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions.</div>';return;}
   card.innerHTML=positions.map(p=>{
-    const pc=p.pnl>=0?"bull":"bear";
+    const pc=p.unrealisedPnl>=0?"bull":"bear";
     const dc=p.changePct>=0?"bull":"bear";
+    const formula=`(${fINR(p.currentPrice)} − ${fINR(p.avgPrice)}) × ${p.qty} shares`;
     return `<div class="pos-item">
       <div class="pos-top">
         <div class="pos-label">${p.label}</div>
-        <div class="pos-pnl ${pc}">${fINR(p.pnl)} <span style="font-size:.8rem">(${fPct(p.pnlPct)} since entry)</span></div>
+        <div class="pos-pnl ${pc}">${fINR(p.unrealisedPnl)} <span style="font-size:.78rem">(${fPct(p.unrealisedPnlPct)})</span></div>
       </div>
       <div class="pos-row">
         <span>${p.qty} shares · Avg ${fINR(p.avgPrice)}</span>
         <span>Now ${fINR(p.currentPrice)} <span class="${dc}" style="font-size:.7rem">${fPct(p.changePct)} today</span></span>
       </div>
+      <div class="pos-formula">${formula}</div>
       <div class="pos-sl">Stop-loss at ${fINR(p.stopLossLevel)}</div>
     </div>`;
   }).join("");
@@ -617,15 +634,19 @@ function renderTrades(trades){
     const actTxt=isStop?"AUTO SELL":t.action;
     const sc=t.session==="morning"?"sess-m":"sess-a";
     const sl=t.session==="morning"?"MRN":"AFT";
+    const feeStr=t.charges?` · Fees ${fINR(t.charges)}`:"";
+    const netStr=t.action==="SELL"&&t.netProceeds?` · Net ${fINR(t.netProceeds)}`:"";
+    const shortReason=(t.reason||"—").split(".")[0].replace(/\[stock\]/g,"position").slice(0,90);
     return `<div class="trade-item">
       <div class="trade-top">
         <div style="display:flex;align-items:center;gap:8px">
           <span class="trade-action ${actCls}">${actTxt}</span>
           <span class="trade-label ${sc}">${sl}</span>
+          <span style="font-size:.7rem;color:var(--sub)">${t.symbol||""}</span>
         </div>
-        <div class="trade-amount">${fINR(t.total)}</div>
+        <div class="trade-amount">${fINR(t.total)}${feeStr}</div>
       </div>
-      <div class="trade-meta">${t.date||"—"} · ${t.reason||"—"}</div>
+      <div class="trade-meta">${t.date||"—"}${netStr} · ${shortReason}</div>
     </div>`;
   }).join("");
 }
