@@ -3,7 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>NEON BULL</title>
+<title>NEON BULL — AI Trading the Indian Market</title>
+<meta name="description" content="I gave Claude AI ₹10,000 and zero human override. It trades NSE every day at breakfast and lunch. Watch it live."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://neon-bull.pages.dev"/>
+<meta property="og:title" content="NEON BULL — AI Trading the Indian Market"/>
+<meta property="og:description" content="I gave Claude AI ₹10,000 and zero human override. It trades NSE every day at breakfast and lunch. Watch it live."/>
+<meta property="og:image" content="https://neon-bull.pages.dev/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="NEON BULL — AI Trading the Indian Market"/>
+<meta name="twitter:description" content="I gave Claude AI ₹10,000 and zero human override. It trades NSE every day at breakfast and lunch. Watch it live."/>
+<meta name="twitter:image" content="https://neon-bull.pages.dev/og-image.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -293,11 +305,12 @@ canvas{display:block;width:100%!important}
   </div>
 
   <!-- HERO -->
-  <div class="hero" id="heroCard">
+  <div class="hero" id="heroCard" style="position:relative">
+    <button class="kpi-help" onclick="showTip('portfolio')" id="help-portfolio" style="position:absolute;top:12px;right:12px">?</button>
     <div class="hero-eyebrow">Total Portfolio Value</div>
     <div class="hero-value" id="heroValue">₹—</div>
     <div class="hero-pill up" id="heroPct">—</div>
-    <div class="hero-start">Started at ₹10,000 · Autonomous AI experiment on NSE</div>
+    <div class="hero-start">Started at ₹10,000</div>
   </div>
 
   <!-- ROW 1: Current State -->
@@ -517,6 +530,45 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
+  <!-- CONTACT -->
+  <div class="collapse-section" id="sec-contact">
+    <div class="collapse-trigger" onclick="toggleSection('sec-contact')">
+      <div class="collapse-left">
+        <span class="collapse-icon">👋</span>
+        <div>
+          <div class="collapse-title">Get in Touch</div>
+          <div class="collapse-meta">Built by Aaron Kankipati</div>
+        </div>
+      </div>
+      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="collapse-body">
+      <div class="collapse-inner" style="padding:24px 20px;display:flex;flex-direction:column;gap:12px">
+        <p style="font-size:.82rem;color:var(--sub);line-height:1.7">
+          Curious about the experiment, want to collaborate, or just want to say hi? Aaron builds at the intersection of AI and products.
+        </p>
+        <a href="https://in.linkedin.com/in/aaronkankipati" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;gap:12px;background:rgba(0,119,181,0.08);border:1px solid rgba(0,119,181,0.2);border-radius:12px;padding:14px 16px;text-decoration:none;transition:all .2s">
+          <span style="font-size:1.4rem">💼</span>
+          <div>
+            <div style="font-size:.84rem;font-weight:700;color:#fff;margin-bottom:2px">LinkedIn</div>
+            <div style="font-size:.72rem;color:var(--sub)">Aaron Kankipati · Connect or follow</div>
+          </div>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--sub)">↗</span>
+        </a>
+        <a href="https://aaronkankipati.github.io/Aaron-Kankipati/" target="_blank" rel="noopener"
+          style="display:flex;align-items:center;gap:12px;background:var(--neon-dim);border:1px solid var(--neon-border);border-radius:12px;padding:14px 16px;text-decoration:none;transition:all .2s">
+          <span style="font-size:1.4rem">🚀</span>
+          <div>
+            <div style="font-size:.84rem;font-weight:700;color:#fff;margin-bottom:2px">AI Product Portfolio</div>
+            <div style="font-size:.72rem;color:var(--sub)">See everything Aaron has built</div>
+          </div>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--sub)">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- DISCLAIMER -->
   <div class="disclaimer">
     <strong>⚠ Disclaimer</strong><br><br>
@@ -534,6 +586,7 @@ const fPct=v=>(v>=0?"+":"")+Number(v).toFixed(2)+"%";
 
 // ── TOOLTIPS ──────────────────────────────────────────────────
 const TIPS={
+  portfolio:{title:"Total Portfolio Value",body:"This is everything Claude has right now — cash on hand plus the current market value of all open stock positions combined. It started at ₹10,000. If this number is above ₹10,000, Claude is winning. Below it, Claude is behind."},
   cash:{title:"Cash Available",body:"The money Claude has not invested yet. This is the dry powder available for the next trade. When Claude buys a stock, this number goes down. When it sells, this number goes back up."},
   invested:{title:"Invested",body:"The total amount currently sitting in open stock positions. This changes as stock prices move throughout the day — if Claude's stocks go up, this number grows too."},
   unrealised:{title:"Unrealised P&L",body:"How much Claude's open positions are up or down right now. This is a paper gain or loss — it becomes real only when Claude sells. Think of it as: if Claude closed everything right this second, this is what it would gain or lose."},
@@ -545,10 +598,26 @@ let idleTimer=null;
 function startNudge(){
   clearTimeout(idleTimer);
   idleTimer=setTimeout(()=>{
-    document.querySelectorAll(".kpi-help").forEach(b=>{
-      b.classList.add("nudge");
-      setTimeout(()=>b.classList.remove("nudge"),3600);
+    // Serial light effect — each help icon glows one after another
+    const btns=Array.from(document.querySelectorAll(".kpi-help"));
+    const delay=320; // ms between each light
+    const duration=800; // how long each glows
+    btns.forEach((b,i)=>{
+      setTimeout(()=>{
+        b.classList.add("nudge");
+        setTimeout(()=>b.classList.remove("nudge"),duration);
+      }, i*delay);
     });
+    // Run the sequence twice with a gap
+    const totalFirst=btns.length*delay+duration;
+    setTimeout(()=>{
+      btns.forEach((b,i)=>{
+        setTimeout(()=>{
+          b.classList.add("nudge");
+          setTimeout(()=>b.classList.remove("nudge"),duration);
+        }, i*delay);
+      });
+    }, totalFirst+600);
   },5000);
 }
 ["touchstart","click"].forEach(e=>document.addEventListener(e,startNudge,{passive:true}));
