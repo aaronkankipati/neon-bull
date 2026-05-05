@@ -66,6 +66,9 @@ body{
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .refresh-btn{background:transparent;border:1px solid var(--border2);color:var(--blue);font-family:var(--body);font-size:.7rem;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;letter-spacing:.06em;transition:all .2s}
 .refresh-btn:hover{border-color:var(--blue);background:#4d9fff12}
+.share-btn{background:transparent;border:1px solid var(--neon-border);color:var(--neon);font-family:var(--body);font-size:.7rem;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;letter-spacing:.06em;transition:all .2s;display:flex;align-items:center;gap:5px}
+.share-btn:hover{background:var(--neon-dim)}
+.share-btn.copied{color:var(--gold);border-color:var(--gold-border)}
 
 /* ── WRAP ── */
 .wrap{padding:14px 12px;display:flex;flex-direction:column;gap:10px}
@@ -103,6 +106,13 @@ body{
 @keyframes card-signal{0%{border-color:rgba(245,166,35,0.6)}60%{border-color:rgba(245,166,35,0.6)}100%{border-color:var(--border)}}
 @keyframes icon-glow{0%,100%{border-color:var(--border2);color:var(--sub);box-shadow:none}40%,60%{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(245,166,35,0.35)}}
 .kpi-card.signalling{animation:card-signal 600ms ease-out forwards}
+@keyframes hero-breathe{
+  0%{border-color:var(--border);box-shadow:none}
+  30%{border-color:rgba(245,166,35,0.35);box-shadow:0 0 28px rgba(245,166,35,0.08),inset 0 0 28px rgba(245,166,35,0.03)}
+  60%{border-color:rgba(245,166,35,0.25);box-shadow:0 0 40px rgba(245,166,35,0.06),inset 0 0 40px rgba(245,166,35,0.02)}
+  100%{border-color:var(--border);box-shadow:none}
+}
+.hero.signalling{animation:hero-breathe 1800ms cubic-bezier(0.4,0,0.2,1) forwards}
 .kpi-help.nudge{animation:icon-glow 900ms ease-in-out forwards}
 .kpi-label{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;padding-right:20px}
 .kpi-value{font-family:var(--disp);font-size:1.5rem;letter-spacing:.04em;line-height:1;margin-bottom:4px}
@@ -110,7 +120,8 @@ body{
 .bull{color:var(--neon)}.bear{color:var(--bear)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 
 /* ── STATUS CARD ── */
-.status-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;position:relative;overflow:hidden}
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;position:relative;overflow:hidden;transition:border-color .2s}
+.status-card.signalling{animation:card-signal 600ms ease-out forwards}
 .status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--status-accent,var(--border2))}
 .status-label{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;padding-right:20px}
 .status-icon{font-size:1.2rem;line-height:1;margin-bottom:4px}
@@ -287,9 +298,16 @@ canvas{display:block;width:100%!important}
     <line x1="218" y1="12" x2="238" y2="72" stroke="url(#lg3)" stroke-width="2.5" stroke-linecap="round" opacity="0.5" filter="url(#lg4)"/>
     <rect x="4" y="124" width="230" height="2.5" rx="1.5" fill="url(#lg3)" opacity="0.55" filter="url(#lg4)"/>
   </svg>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div class="live"><div class="live-dot"></div>LIVE</div>
-    <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="live"><div class="live-dot"></div>LIVE</div>
+      <button class="share-btn" id="shareBtn" onclick="shareApp()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share
+      </button>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
+    </div>
+    <div id="lastUpdated" style="font-size:.58rem;color:var(--muted);letter-spacing:.04em;text-align:right">—</div>
   </div>
 </div>
 
@@ -472,7 +490,13 @@ canvas{display:block;width:100%!important}
     </div>
     <div class="collapse-body">
       <div class="collapse-inner">
-        <div class="chart-wrap"><canvas id="chart" height="160"></canvas></div>
+        <div class="chart-wrap" style="position:relative">
+          <canvas id="chart" height="160"></canvas>
+          <div id="chartEmpty" style="display:none;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            <div style="font-size:.72rem;color:var(--sub);text-align:center;line-height:1.6">Building history as the experiment runs.<br><span style="font-size:.66rem;color:var(--muted)">More data points appear each trading day.</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -580,8 +604,10 @@ function startNudge(){
     if(nudgeFired) return;
     nudgeFired=true;
     // Market Signal — card border flashes, then ? icon glows. Sequential, top to bottom.
-    const cards=Array.from(document.querySelectorAll(".kpi-card"));
-    const helps=Array.from(document.querySelectorAll(".kpi-help"));
+    // Explicitly build the card sequence: 5 kpi-cards + statusCard as 6th
+    const kpiCards=Array.from(document.querySelectorAll(".kpi-card"));
+    const statusCard=document.getElementById("statusCard");
+    const cards=[...kpiCards,...(statusCard?[statusCard]:[])];
     const step=220; // ms between each card signal
     cards.forEach((card,i)=>{
       const btn=card.querySelector(".kpi-help");
@@ -598,14 +624,30 @@ function startNudge(){
         }
       },i*step);
     });
-    // Session help fires last — after all cards
+    // Session help fires after all 6 cards
     const sessHelp=document.getElementById("help-sessions");
     if(sessHelp){
-      const lastDelay=cards.length*step+120;
+      const sessDelay=cards.length*step+120;
       setTimeout(()=>{
         sessHelp.classList.add("nudge");
         setTimeout(()=>sessHelp.classList.remove("nudge"),900);
-      },lastDelay);
+      },sessDelay);
+    }
+    // Portfolio card + help fire last — entire hero card glows to close the sequence
+    const portHelp=document.getElementById("help-portfolio");
+    const heroCard=document.getElementById("heroCard");
+    if(portHelp&&heroCard){
+      const portDelay=cards.length*step+120+step;
+      setTimeout(()=>{
+        // Full hero card border signals — same as KPI cards but wider impact
+        heroCard.classList.add("signalling");
+        setTimeout(()=>heroCard.classList.remove("signalling"),1800);
+        // Help icon glows 80ms after border flash
+        setTimeout(()=>{
+          portHelp.classList.add("nudge");
+          setTimeout(()=>portHelp.classList.remove("nudge"),900);
+        },80);
+      },portDelay);
     }
   },5000);
 }
@@ -874,6 +916,27 @@ function renderAuthorTrades(trades){
 document.getElementById("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")checkPin();});
 
 // ── MAIN ──────────────────────────────────────────────────────
+function shareApp(){
+  const url="https://neon-bull.pages.dev";
+  const text="What if AI traded the Indian market? I gave Claude ₹10,000 and zero human override. Watch it trade live.";
+  if(navigator.share){
+    navigator.share({title:"NEON BULL — AI Trading the Indian Market",text,url})
+      .catch(()=>{});
+  } else {
+    // Fallback — copy URL to clipboard
+    navigator.clipboard.writeText(url).then(()=>{
+      const btn=document.getElementById("shareBtn");
+      if(btn){
+        btn.textContent="✓ Copied";btn.className="share-btn copied";
+        setTimeout(()=>{
+          btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share';
+          btn.className="share-btn";
+        },2000);
+      }
+    }).catch(()=>{});
+  }
+}
+
 async function loadAll(){
   const btn=document.getElementById("refreshBtn");
   if(btn){btn.textContent="Refreshing…";btn.className="refresh-btn loading";btn.disabled=true;}
@@ -900,7 +963,13 @@ async function loadAll(){
       window._chartData={labels:port.snapshots.map(s=>s.date),values:port.snapshots.map(s=>s.totalValue)};
       document.getElementById("chartMeta").textContent=fPct(port.totalPnlPct)+" total return";
       const sec=document.getElementById("sec-chart");
-      if(sec.classList.contains("open"))drawChart(window._chartData.labels,window._chartData.values);
+      // Show empty state if only 1 data point — not enough for a meaningful line
+      const chartEmpty=document.getElementById("chartEmpty");
+      const hasEnoughData=window._chartData.values.length>1;
+      if(chartEmpty){chartEmpty.style.display=hasEnoughData?"none":"flex";}
+      const chartEl=document.getElementById("chart");
+      if(chartEl){chartEl.style.display=hasEnoughData?"block":"none";}
+      if(hasEnoughData&&sec.classList.contains("open"))drawChart(window._chartData.labels,window._chartData.values);
     }
   }catch(e){
     const b=document.getElementById("setupBanner");b.style.display="block";
@@ -914,6 +983,18 @@ async function loadAll(){
   if(btn){
     btn.textContent="✓ Updated";btn.className="refresh-btn done";btn.disabled=false;
     setTimeout(()=>{btn.textContent="Refresh";btn.className="refresh-btn";},2000);
+    // Update last updated timestamp
+    const lu=document.getElementById("lastUpdated");
+    if(lu){
+      window._lastLoadTime=Date.now();
+      lu.textContent="Updated just now";
+      // Tick the "X mins ago" every minute
+      clearInterval(window._luTimer);
+      window._luTimer=setInterval(()=>{
+        const mins=Math.floor((Date.now()-window._lastLoadTime)/60000);
+        if(lu) lu.textContent=mins<1?"Updated just now":mins===1?"Updated 1 min ago":"Updated "+mins+" mins ago";
+      },30000);
+    }
   }
 }
 loadAll();
