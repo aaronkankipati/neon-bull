@@ -385,11 +385,31 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
+  <!-- COLLAPSIBLE: Open Positions -->
+  <div class="collapse-section" id="sec-positions">
+    <div class="collapse-trigger" onclick="toggleSection('sec-positions')">
+      <div class="collapse-left">
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        <div>
+          <div class="collapse-title">Open Positions</div>
+          <div class="collapse-meta" id="posCount">—</div>
+        </div>
+      </div>
+      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="collapse-body">
+      <div class="collapse-inner" id="posCard">
+        <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- COLLAPSIBLE: Claude's Market Read -->
   <div class="collapse-section" id="sec-claude">
     <div class="collapse-trigger" onclick="toggleSection('sec-claude')">
       <div class="collapse-left">
-        <span class="collapse-icon">🤖</span>
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg></span>
         <div>
           <div class="collapse-title">Claude's Market Read</div>
           <div class="collapse-meta" id="claudeMeta">Latest analysis</div>
@@ -406,11 +426,32 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
+
+  <!-- COLLAPSIBLE: Recent Activity -->
+  <div class="collapse-section" id="sec-trades">
+    <div class="collapse-trigger" onclick="toggleSection('sec-trades')">
+      <div class="collapse-left">
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+        <div>
+          <div class="collapse-title">Recent Activity</div>
+          <div class="collapse-meta" id="tradeCount">—</div>
+        </div>
+      </div>
+      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="collapse-body">
+      <div class="collapse-inner" id="tradesCard" style="max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch">
+        <div class="empty"><span class="empty-icon">▣</span>No trades yet.</div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- COLLAPSIBLE: Portfolio Growth -->
   <div class="collapse-section" id="sec-chart">
     <div class="collapse-trigger" onclick="toggleSection('sec-chart')">
       <div class="collapse-left">
-        <span class="collapse-icon">📈</span>
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
         <div>
           <div class="collapse-title">Portfolio Growth</div>
           <div class="collapse-meta" id="chartMeta">—</div>
@@ -425,49 +466,12 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
-  <!-- COLLAPSIBLE: Open Positions -->
-  <div class="collapse-section" id="sec-positions">
-    <div class="collapse-trigger" onclick="toggleSection('sec-positions')">
-      <div class="collapse-left">
-        <span class="collapse-icon">📊</span>
-        <div>
-          <div class="collapse-title">Open Positions</div>
-          <div class="collapse-meta" id="posCount">—</div>
-        </div>
-      </div>
-      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="collapse-body">
-      <div class="collapse-inner" id="posCard">
-        <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COLLAPSIBLE: Recent Activity -->
-  <div class="collapse-section" id="sec-trades">
-    <div class="collapse-trigger" onclick="toggleSection('sec-trades')">
-      <div class="collapse-left">
-        <span class="collapse-icon">🔄</span>
-        <div>
-          <div class="collapse-title">Recent Activity</div>
-          <div class="collapse-meta" id="tradeCount">—</div>
-        </div>
-      </div>
-      <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-    </div>
-    <div class="collapse-body">
-      <div class="collapse-inner" id="tradesCard">
-        <div class="empty"><span class="empty-icon">📋</span>No trades yet.</div>
-      </div>
-    </div>
-  </div>
 
   <!-- COLLAPSIBLE: Author View -->
   <div class="collapse-section" id="sec-author" style="border-color:var(--gold-border)">
     <div class="collapse-trigger" onclick="toggleSection('sec-author')">
       <div class="collapse-left">
-        <span class="collapse-icon">🔐</span>
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
         <div>
           <div class="collapse-title" style="color:var(--gold)">Author View</div>
           <div class="collapse-meta">Visible only to Aaron Kankipati</div>
@@ -488,11 +492,12 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
+
   <!-- CONTACT -->
   <div class="collapse-section" id="sec-contact">
     <div class="collapse-trigger" onclick="toggleSection('sec-contact')">
       <div class="collapse-left">
-        <span class="collapse-icon">👋</span>
+        <span class="collapse-icon" style="display:flex;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
         <div>
           <div class="collapse-title">Get in Touch</div>
           <div class="collapse-meta">Built by Aaron Kankipati</div>
@@ -507,7 +512,7 @@ canvas{display:block;width:100%!important}
         </p>
         <a href="https://in.linkedin.com/in/aaronkankipati" target="_blank" rel="noopener"
           style="display:flex;align-items:center;gap:12px;background:rgba(0,119,181,0.08);border:1px solid rgba(0,119,181,0.2);border-radius:12px;padding:14px 16px;text-decoration:none;transition:all .2s">
-          <span style="font-size:1.4rem">💼</span>
+          <span style="display:flex;align-items:center;color:rgba(255,255,255,0.6)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></span>
           <div>
             <div style="font-size:.84rem;font-weight:700;color:#fff;margin-bottom:2px">LinkedIn</div>
             <div style="font-size:.72rem;color:var(--sub)">Aaron Kankipati · Connect or follow</div>
@@ -516,7 +521,7 @@ canvas{display:block;width:100%!important}
         </a>
         <a href="https://aaronkankipati.github.io/Aaron-Kankipati/" target="_blank" rel="noopener"
           style="display:flex;align-items:center;gap:12px;background:var(--neon-dim);border:1px solid var(--neon-border);border-radius:12px;padding:14px 16px;text-decoration:none;transition:all .2s">
-          <span style="font-size:1.4rem">🚀</span>
+          <span style="display:flex;align-items:center;color:var(--neon)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           <div>
             <div style="font-size:.84rem;font-weight:700;color:#fff;margin-bottom:2px">AI Product Portfolio</div>
             <div style="font-size:.72rem;color:var(--sub)">See everything Aaron has built</div>
@@ -527,9 +532,11 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
+
+
   <!-- DISCLAIMER -->
   <div class="disclaimer">
-    <strong>⚠ Disclaimer</strong><br><br>
+    <strong style="display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Disclaimer</strong><br><br>
     NEON BULL is a personal research project by <strong>Aaron Kankipati</strong>, built purely out of curiosity to observe what happens when an AI is given full autonomous control over a simulated trading portfolio.<br><br>
     <strong>Not financial advice.</strong> Not registered with SEBI. No real money involved. All trades are simulated with virtual paper capital. The ₹10,000 starting balance is fictional.<br><br>
     <em>For research and personal curiosity only. Trade responsibly. Consult a qualified financial advisor before making any real investment decisions.</em>
@@ -553,32 +560,25 @@ const TIPS={
   status:{title:"Experiment Status",body:"A plain-English read on whether Claude is winning or losing compared to the ₹10,000 it started with. If it's ahead, Claude is making money. If it's behind, Claude is in a loss. This is the bottom line of the experiment."}
 };
 let idleTimer=null;
+let nudgeFired=false;
 function startNudge(){
+  if(nudgeFired) return;
   clearTimeout(idleTimer);
   idleTimer=setTimeout(()=>{
-    // Serial light effect — each help icon glows one after another
+    if(nudgeFired) return;
+    nudgeFired=true;
+    // Serial light — one after another, top to bottom, fires once only
     const btns=Array.from(document.querySelectorAll(".kpi-help"));
-    const delay=320; // ms between each light
-    const duration=800; // how long each glows
+    const delay=300, duration=750;
     btns.forEach((b,i)=>{
       setTimeout(()=>{
         b.classList.add("nudge");
         setTimeout(()=>b.classList.remove("nudge"),duration);
       }, i*delay);
     });
-    // Run the sequence twice with a gap
-    const totalFirst=btns.length*delay+duration;
-    setTimeout(()=>{
-      btns.forEach((b,i)=>{
-        setTimeout(()=>{
-          b.classList.add("nudge");
-          setTimeout(()=>b.classList.remove("nudge"),duration);
-        }, i*delay);
-      });
-    }, totalFirst+600);
   },5000);
 }
-["touchstart","click"].forEach(e=>document.addEventListener(e,startNudge,{passive:true}));
+["touchstart","click","scroll"].forEach(e=>document.addEventListener(e,startNudge,{passive:true}));
 startNudge();
 function showTip(key){
   const t=TIPS[key];if(!t)return;
@@ -739,21 +739,24 @@ function plainReason(reason, action, isStop){
   if(isStop) return "Auto-sold — hit the safety exit price";
   if(!reason||reason==="—") return "—";
   const r=reason.toLowerCase();
-  // BUY signals
-  // SELL signals first to avoid misclassification
-  if(r.includes("stop loss")||r.includes("stop-loss")||r.includes("approaching stop")) return "Getting too close to the safety exit";
-  if(r.includes("overbought")||r.includes("rsi 8")||r.includes("rsi 9")||r.includes("rsi 7")) return "Stock looked too expensive to hold";
-  if(r.includes("target")||r.includes("profit")) return "Taking profit at target price";
-  if(r.includes("reduce")||r.includes("exposure")) return "Reducing risk on this position";
-  // BUY signals
-  if(r.includes("oversold")||r.includes("rsi 1")||r.includes("rsi 2")||r.includes("deeply")) return "Stock looked heavily discounted";
-  if(r.includes("recovery")||r.includes("sma5>sma20")||r.includes("sma5 >")) return "Strong recovery signal spotted";
-  if(r.includes("value")||r.includes("30d low")||r.includes("deep value")) return "Trading near its lowest recent price";
-  if(r.includes("crossover")||r.includes("crossing")) return "Upward trend signal spotted";
-  if(r.includes("reversal")||r.includes("potential reversal")) return "Spotted a potential reversal";
-  if(r.includes("volume")||r.includes("vol ")) return "High trading volume confirmed the move";
-  if(r.includes("momentum")) return "Strong momentum spotted";
-  // Fallback — clean up the raw reason
+  const isBuy=action==="BUY";
+  // Action-aware: SELL reasons only apply to SELLs, BUY reasons only to BUYs
+  if(!isBuy){
+    if(r.includes("stop loss")||r.includes("stop-loss")||r.includes("approaching stop")) return "Getting too close to the safety exit";
+    if(r.includes("overbought")||r.includes("rsi 8")||r.includes("rsi 9")||r.includes("rsi 7")||r.includes("avoiding")) return "Stock looked too expensive to hold";
+    if(r.includes("target")||r.includes("profit")) return "Taking profit at target price";
+    if(r.includes("reduce")||r.includes("exposure")) return "Reducing risk on this position";
+  }
+  if(isBuy){
+    if(r.includes("oversold")||r.includes("rsi 1")||r.includes("rsi 2")||r.includes("deeply")||r.includes("extreme")||r.includes("contrarian")) return "Stock looked heavily discounted";
+    if(r.includes("recovery")||r.includes("sma5>sma20")||r.includes("sma5 >")) return "Strong recovery signal spotted";
+    if(r.includes("value")||r.includes("30d low")||r.includes("deep value")) return "Trading near its lowest recent price";
+    if(r.includes("crossover")||r.includes("crossing")) return "Upward trend signal spotted";
+    if(r.includes("reversal")) return "Spotted a potential reversal";
+    if(r.includes("volume")||r.includes("vol ")) return "High trading volume confirmed the move";
+    if(r.includes("momentum")) return "Strong momentum spotted";
+  }
+  // Fallback
   return reason.split(".")[0]
     .replace(/rsi\s*[\d.]+/gi,"")
     .replace(/sma\d+/gi,"")
