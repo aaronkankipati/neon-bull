@@ -710,7 +710,19 @@ function drawChart(labels,values){
   ctx.beginPath();ctx.arc(ep.x,ep.y,8,0,Math.PI*2);ctx.fillStyle=lc+"30";ctx.fill();
   ctx.fillStyle="#3a4a65";ctx.font="9px JetBrains Mono";
   const step=Math.max(1,Math.floor(labels.length/4));
-  labels.forEach((l,i)=>{if(i%step===0)ctx.fillText(l.slice(5),pad.l+i*xs-8,H-4);});
+  labels.forEach((l,i)=>{
+    if(i%step!==0&&i!==labels.length-1) return; // always draw last label
+    const lbl=l.slice(5); // "05-05"
+    const lw=ctx.measureText(lbl).width;
+    const isLast=i===labels.length-1;
+    const isFirst=i===0;
+    // First: left-align, Last: right-align, others: centre
+    let x=pad.l+i*xs;
+    if(isFirst) x=pad.l;
+    else if(isLast) x=pad.l+w-lw;
+    else x=pad.l+i*xs-lw/2;
+    ctx.fillText(lbl,x,H-4);
+  });
 }
 
 // ── RENDER ────────────────────────────────────────────────────
