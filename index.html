@@ -667,23 +667,7 @@ function startNudge(){
         },80);
       },portDelay);
     }
-    // Scroll sections breathe after hero — subtle pulse on their borders
-    const scrollSections=["sec-positions","sec-trades"];
-    scrollSections.forEach((sid,i)=>{
-      const sec=document.getElementById(sid);
-      if(!sec) return;
-      const breatheDelay=cards.length*step+120+step+step+(i*280);
-      setTimeout(()=>{
-        sec.style.transition="border-color 300ms ease-in-out, box-shadow 300ms ease-in-out";
-        sec.style.borderColor="rgba(0,255,136,0.5)";
-        sec.style.boxShadow="0 0 16px rgba(0,255,136,0.12),inset 0 0 16px rgba(0,255,136,0.04)";
-        setTimeout(()=>{
-          sec.style.borderColor="";
-          sec.style.boxShadow="";
-          setTimeout(()=>sec.style.transition="",400);
-        },600);
-      },breatheDelay);
-    });
+
   },5000);
 }
 ["touchstart","click","scroll"].forEach(e=>document.addEventListener(e,startNudge,{passive:true}));
