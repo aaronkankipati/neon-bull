@@ -383,29 +383,34 @@ canvas{display:block;width:100%!important}
     </div>
   </div>
 
-  <!-- ROW 2: Experiment status — full width -->
-  <div class="status-card" id="statusCard" style="--kpi-accent:var(--bear)">
-    <button class="kpi-help" onclick="showTip('status')" id="help-status">?</button>
-    <div class="status-label">Experiment</div>
-    <div class="status-icon" id="statusIcon">—</div>
-    <div class="status-headline" id="statusHeadline">—</div>
-    <div class="status-sub" id="statusSub">—</div>
-  </div>
+  <!-- ROW 2: Experiment + Stats side by side -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch">
 
-  <!-- STAT ROW -->
-  <div class="stat-row">
-    <div class="stat-card">
-      <div class="stat-val gold" id="statDays">—</div>
-      <div class="stat-label">Days Run</div>
+    <!-- Experiment card -->
+    <div class="status-card" id="statusCard" style="margin:0">
+      <button class="kpi-help" onclick="showTip('status')" id="help-status">?</button>
+      <div class="status-label">Experiment</div>
+      <div class="status-icon" id="statusIcon">—</div>
+      <div class="status-headline" id="statusHeadline">—</div>
+      <div class="status-sub" id="statusSub">—</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-val bull" id="statProfit">—</div>
-      <div class="stat-label">Profit Days</div>
+
+    <!-- Stats card -->
+    <div class="kpi-card" style="--kpi-accent:var(--sub);display:flex;flex-direction:column;justify-content:space-between;gap:0;padding:14px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)">Days Run</div>
+        <div class="stat-val gold" id="statDays" style="font-family:var(--disp);font-size:1.4rem;letter-spacing:.04em;line-height:1">—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)">Profit Days</div>
+        <div class="stat-val bull" id="statProfit" style="font-family:var(--disp);font-size:1.4rem;letter-spacing:.04em;line-height:1">—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:9px">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)">Loss Days</div>
+        <div class="stat-val bear" id="statLoss" style="font-family:var(--disp);font-size:1.4rem;letter-spacing:.04em;line-height:1">—</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-val bear" id="statLoss">—</div>
-      <div class="stat-label">Loss Days</div>
-    </div>
+
   </div>
 
   <!-- COLLAPSIBLE: Open Positions -->
