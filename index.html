@@ -158,18 +158,13 @@ body{
 .collapse-section.open .collapse-body{max-height:4000px}
 .collapse-inner{border-top:1px solid var(--border)}
 /* Scrollable sub-panels */
-.scroll-panel{max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;scroll-behavior:smooth}
+.scroll-panel{max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .scroll-panel::-webkit-scrollbar{width:2px}
 .scroll-panel::-webkit-scrollbar-track{background:transparent}
 .scroll-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-/* Gradient fade — signals more content below */
-.scroll-wrap{position:relative}
-.scroll-fade{
-  position:absolute;bottom:0;left:0;right:0;height:64px;
-  background:linear-gradient(to bottom,transparent 0%,rgba(15,19,32,0.7) 40%,rgba(15,19,32,0.97) 100%);
-  pointer-events:none;border-radius:0 0 var(--r) var(--r);
-  opacity:1;transition:opacity .3s;display:none;
-}
+/* Scroll hint text */
+.scroll-hint{display:none;align-items:center;justify-content:center;gap:5px;padding:7px 0;border-top:1px solid var(--border);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);background:var(--card)}
+.scroll-hint svg{opacity:.5}
 
 /* ── CHART ── */
 .chart-wrap{padding:16px}
@@ -441,11 +436,12 @@ canvas{display:block;width:100%!important}
     </div>
     <div class="collapse-body">
       <div class="collapse-inner">
-        <div class="scroll-wrap" id="posWrap">
-          <div class="scroll-panel" id="posCard" onscroll="handleScroll('posCard','posFade')">
-            <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
-          </div>
-          <div class="scroll-fade" id="posFade"></div>
+        <div class="scroll-panel" id="posCard" onscroll="handleScroll('posCard','posHint')">
+          <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
+        </div>
+        <div class="scroll-hint" id="posHint">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Scroll to see more
         </div>
       </div>
     </div>
@@ -488,11 +484,12 @@ canvas{display:block;width:100%!important}
     </div>
     <div class="collapse-body">
       <div class="collapse-inner">
-        <div class="scroll-wrap" id="tradesWrap">
-          <div class="scroll-panel" id="tradesCard" onscroll="handleScroll('tradesCard','tradesFade')">
-            <div class="empty"><span class="empty-icon">▣</span>No trades yet.</div>
-          </div>
-          <div class="scroll-fade" id="tradesFade"></div>
+        <div class="scroll-panel" id="tradesCard" onscroll="handleScroll('tradesCard','tradesHint')">
+          <div class="empty"><span class="empty-icon">▣</span>No trades yet.</div>
+        </div>
+        <div class="scroll-hint" id="tradesHint">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Scroll to see more
         </div>
       </div>
     </div>
@@ -706,14 +703,8 @@ function toggleSection(id){
   if(id==="sec-chart"&&s.classList.contains("open")&&window._chartData)
     setTimeout(()=>drawChart(window._chartData.labels,window._chartData.values),50);
   // Refresh fades when sections open — content now visible
-  if(id==="sec-positions"){
-    setTimeout(()=>updateFade("posCard","posFade"),450);
-    setTimeout(()=>updateFade("posCard","posFade"),800); // second pass after animation fully settles
-  }
-  if(id==="sec-trades"){
-    setTimeout(()=>updateFade("tradesCard","tradesFade"),450);
-    setTimeout(()=>updateFade("tradesCard","tradesFade"),800);
-  }
+  if(id==="sec-positions") setTimeout(()=>updateHint("posCard","posHint"),450);
+  if(id==="sec-trades")    setTimeout(()=>updateHint("tradesCard","tradesHint"),450);
 }
 
 // ── CHART ─────────────────────────────────────────────────────
@@ -852,7 +843,7 @@ function renderAI(ins){
 function renderPositions(positions){
   const card=document.getElementById("posCard"),cnt=document.getElementById("posCount");
   cnt.textContent=(positions?.length||0)+" open";
-  if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>';updateFade("posCard","posFade");return;}
+  if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>';updateHint("posCard","posHint");return;}
   card.innerHTML=positions.map(p=>{
     const hasGain=p.unrealisedPnl>0.005,hasLoss=p.unrealisedPnl<-0.005;
     const gainCls=hasGain?"bull":hasLoss?"bear":"";
@@ -873,23 +864,21 @@ function renderPositions(positions){
       <div class="pos-sl">Auto-sells below ${fINR(p.stopLossLevel)}</div>
     </div>`;
   }).join("");
-  setTimeout(()=>updateFade("posCard","posFade"),50);
+  setTimeout(()=>updateHint("posCard","posHint"),50);
 }
 
 // Scroll fade — hide when user reaches bottom, show when content overflows
-function updateFade(panelId, fadeId){
+function updateHint(panelId, hintId){
   const panel=document.getElementById(panelId);
-  const fade=document.getElementById(fadeId);
-  if(!panel||!fade) return;
-  // Use rAF to let the DOM fully paint before measuring
+  const hint=document.getElementById(hintId);
+  if(!panel||!hint) return;
   requestAnimationFrame(()=>{
     const hasOverflow=panel.scrollHeight>panel.clientHeight+4;
     const atBottom=panel.scrollTop+panel.clientHeight>=panel.scrollHeight-8;
-    fade.style.display=hasOverflow?"block":"none";
-    fade.style.opacity=(hasOverflow&&!atBottom)?"1":"0";
+    hint.style.display=(hasOverflow&&!atBottom)?"flex":"none";
   });
 }
-function handleScroll(panelId, fadeId){updateFade(panelId,fadeId);}
+function handleScroll(panelId, hintId){updateHint(panelId,hintId);}
 
 function plainReason(reason, action, isStop){
   if(isStop) return "Auto-sold — hit the safety exit price";
@@ -925,7 +914,7 @@ function renderTrades(trades){
   const card=document.getElementById("tradesCard"),cnt=document.getElementById("tradeCount");
   cnt.textContent=(trades?.length||0)+" trades";
   if(!trades?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📋</span>No trades yet.</div>';return;}
-  setTimeout(()=>updateFade("tradesCard","tradesFade"),50);
+  setTimeout(()=>updateHint("tradesCard","tradesHint"),50);
   card.innerHTML=trades.slice(0,12).map(t=>{
     const isStop=t.autoStopLoss;
     const isBuy=t.action==="BUY";
