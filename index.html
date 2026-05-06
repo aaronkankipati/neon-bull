@@ -375,29 +375,21 @@ canvas{display:block;width:100%!important}
       <div class="kpi-value" id="kpiInvested">₹—</div>
       <div class="kpi-sub" id="kpiPositions">— positions</div>
     </div>
-    <div class="kpi-card" style="--kpi-accent:var(--neon)">
-      <button class="kpi-help" onclick="showTip('unrealised')" id="help-unrealised">?</button>
-      <div class="kpi-label">Unrealised P&amp;L</div>
-      <div class="kpi-value" id="kpiUnrealised">₹—</div>
-      <div class="kpi-sub" id="kpiUnrealisedSub">—</div>
+    <div class="kpi-card" style="--kpi-accent:var(--gold)">
+      <button class="kpi-help" onclick="showTip('totalpnl')" id="help-totalpnl">?</button>
+      <div class="kpi-label">Total P&amp;L</div>
+      <div class="kpi-value" id="kpiTotalPnl">₹—</div>
+      <div class="kpi-sub" id="kpiTotalPnlSub">Since start</div>
     </div>
   </div>
 
-  <!-- ROW 2: Outcome — 2 cols -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-    <div class="kpi-card" style="--kpi-accent:var(--gold)">
-      <button class="kpi-help" onclick="showTip('realised')" id="help-realised">?</button>
-      <div class="kpi-label">Realised P&amp;L</div>
-      <div class="kpi-value" id="statRealized">₹—</div>
-      <div class="kpi-sub" id="statRealizedSub">From closed trades</div>
-    </div>
-    <div class="status-card" id="statusCard">
-      <button class="kpi-help" onclick="showTip('status')" id="help-status">?</button>
-      <div class="status-label">Experiment</div>
-      <div class="status-icon" id="statusIcon">—</div>
-      <div class="status-headline" id="statusHeadline">—</div>
-      <div class="status-sub" id="statusSub">—</div>
-    </div>
+  <!-- ROW 2: Experiment status — full width -->
+  <div class="status-card" id="statusCard" style="--kpi-accent:var(--bear)">
+    <button class="kpi-help" onclick="showTip('status')" id="help-status">?</button>
+    <div class="status-label">Experiment</div>
+    <div class="status-icon" id="statusIcon">—</div>
+    <div class="status-headline" id="statusHeadline">—</div>
+    <div class="status-sub" id="statusSub">—</div>
   </div>
 
   <!-- STAT ROW -->
@@ -600,11 +592,38 @@ const fPct=v=>(v>=0?"+":"")+Number(v).toFixed(2)+"%";
 
 // ── TOOLTIPS ──────────────────────────────────────────────────
 const TIPS={
-  portfolio:{title:"Total Portfolio Value",body:"Everything Claude has right now — cash plus the live market value of all open positions. Started at ₹10,000.\n\nHow it breaks down:\n• Realised P&L — locked-in result from closed trades (sell fees already deducted, buy fees in avg price)\n• Unrealised P&L — paper gain/loss on open positions\n• Buy fees on open positions — embedded in avg buy price, surface in Realised when positions close\n\nThese three always add up to the total P&L shown here."},
+  portfolio:{title:"Total Portfolio Value",body:"Everything Claude has right now — cash plus the live market value of all open positions. Started at ₹10,000."},
   cash:{title:"Cash Available",body:"The money Claude has not invested yet. This is the dry powder available for the next trade. When Claude buys a stock, this number goes down. When it sells, this number goes back up."},
   invested:{title:"Invested",body:"The total current market value of all open stock positions. This changes as stock prices move — if Claude's stocks go up, this number grows too."},
-  unrealised:{title:"Unrealised P&L",body:"How much Claude's open positions are up or down right now. Paper gain or loss — it becomes real only when Claude sells. If Claude closed everything right this second, this is what it would gain or lose."},
-  realised:{title:"Realised P&L",body:"The confirmed profit or loss from trades Claude has already closed. Sell-side charges (brokerage, STT, DP fees etc.) are already deducted. Buy-side charges are baked into the avg buy price of each position. This is the true economic result of completed trades."},
+  totalpnl:{title:"Total P&L",html:true,body:`
+    <div style="font-size:.82rem;color:var(--sub);line-height:1.7;margin-bottom:14px">How much Claude is up or down since the experiment started. Tap any row to learn more.</div>
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;background:var(--card);border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--text)">Realised P&L</div>
+          <div style="font-size:.66rem;color:var(--sub);margin-top:2px">Locked-in result from closed trades.<br>Sell fees already deducted inside this number.</div>
+        </div>
+        <div id="tipRealised" style="font-family:var(--mono);font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:12px">₹—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;background:var(--card);border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--text)">Unrealised P&L</div>
+          <div style="font-size:.66rem;color:var(--sub);margin-top:2px">Paper gain/loss on open positions right now.<br>Becomes real when Claude sells.</div>
+        </div>
+        <div id="tipUnrealised" style="font-family:var(--mono);font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:12px">₹—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;background:var(--card)">
+        <div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--text)">Buy fees (open positions)</div>
+          <div style="font-size:.66rem;color:var(--sub);margin-top:2px">Buy-side charges embedded in avg price.<br>Will surface in Realised P&L when positions close.</div>
+        </div>
+        <div id="tipFees" style="font-family:var(--mono);font-size:.8rem;font-weight:700;white-space:nowrap;padding-left:12px">₹—</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 14px;background:var(--card2);border:1px solid var(--border2);border-radius:10px">
+      <div style="font-size:.72rem;font-weight:700;color:var(--text)">Total P&L</div>
+      <div id="tipTotal" style="font-family:var(--mono);font-size:.88rem;font-weight:700">₹—</div>
+    </div>`},
   status:{title:"Experiment Status",body:"A plain-English read on whether Claude is winning or losing vs the ₹10,000 it started with."},
   sessions:{title:"Why these times?",body:"These are Aaron's personal trading times — 9:30 AM when the market opens over breakfast, and 1:30 PM for a midday check over lunch. Claude trades at exactly these times every weekday, mimicking Aaron's own pattern but with an AI brain making every decision."}
 };
@@ -668,7 +687,26 @@ startNudge();
 function showTip(key){
   const t=TIPS[key];if(!t)return;
   document.getElementById("tooltipTitle").textContent=t.title;
-  document.getElementById("tooltipBody").textContent=t.body;
+  const bodyEl=document.getElementById("tooltipBody");
+  if(t.html){
+    bodyEl.innerHTML=t.body;
+    // Inject live values if available
+    if(window._pnlSnapshot){
+      const {totalPnl,realizedPnl,unrealisedPnl}=window._pnlSnapshot;
+      const feesInOpen=+(totalPnl-(realizedPnl+unrealisedPnl)).toFixed(2);
+      const col=(v)=>`<span style="color:${v>=0?"var(--neon)":"var(--bear)"}">${v>=0?"+":""}${fINR(v)}</span>`;
+      const r=document.getElementById("tipRealised");
+      const u=document.getElementById("tipUnrealised");
+      const f=document.getElementById("tipFees");
+      const tot=document.getElementById("tipTotal");
+      if(r) r.innerHTML=col(realizedPnl);
+      if(u) u.innerHTML=col(unrealisedPnl);
+      if(f) f.innerHTML=col(feesInOpen);
+      if(tot) tot.innerHTML=col(totalPnl);
+    }
+  } else {
+    bodyEl.textContent=t.body;
+  }
   document.getElementById("tooltipOverlay").classList.add("show");
 }
 function closeTooltip(){document.getElementById("tooltipOverlay").classList.remove("show")}
@@ -757,28 +795,28 @@ function renderKPIs(d){
   document.getElementById("kpiInvested").textContent=fINR(d.holdingsValue);
   const n=d.positions?.length||0;
   document.getElementById("kpiPositions").textContent=n+" position"+(n!==1?"s":"");
-  const ur=d.unrealisedPnl||0,urEl=document.getElementById("kpiUnrealised");
-  urEl.textContent=fINR(ur);
-  urEl.className="kpi-value "+(ur>=0?"bull":"bear");
-  document.getElementById("kpiUnrealisedSub").textContent=fPct(d.holdingsValue>0?(ur/d.holdingsValue*100):0)+" on open positions";
+  // Total P&L card
+  const tp=d.totalPnl||0,tpEl=document.getElementById("kpiTotalPnl");
+  tpEl.textContent=fINR(tp);
+  tpEl.className="kpi-value "+(tp>=0?"bull":"bear");
+  const tpPct=d.totalPnlPct||0;
+  document.getElementById("kpiTotalPnlSub").textContent=fPct(tpPct)+" since start";
+  // Store snapshot for tooltip live values
+  window._pnlSnapshot={
+    totalPnl:tp,
+    realizedPnl:d.realizedPnl||0,
+    unrealisedPnl:d.unrealisedPnl||0
+  };
 }
 
 function renderRecon(totalPnl, realizedPnl, unrealisedPnl){
-  // Breakdown now lives in the portfolio ? tooltip — no standalone card needed
+  // Breakdown lives in the Total P&L ? tooltip — no standalone card needed
 }
 
 function renderStats(exp,realizedPnl,totalPnl,unrealisedPnl){
   document.getElementById("statDays").textContent=exp?.totalDays||0;
   document.getElementById("statProfit").textContent=exp?.profitDays||0;
   document.getElementById("statLoss").textContent=exp?.lossDays||0;
-  const rp=realizedPnl||0,rpEl=document.getElementById("statRealized");
-  rpEl.textContent=fINR(rp);rpEl.className="kpi-value "+(rp>=0?"bull":"bear");
-  const rpSub=document.getElementById("statRealizedSub");
-  const charges=exp?.totalChargesPaid||0;
-  if(rpSub){
-    if(rp===0) rpSub.textContent="No closed trades yet";
-    else rpSub.textContent=(rp>=0?"Profit":"Loss")+" from closed trades · ₹"+charges.toFixed(0)+" in fees";
-  }
   const p=totalPnl||0,d2=exp?.totalDays||0;
   const sc=document.getElementById("statusCard");
   const icon=document.getElementById("statusIcon"),hl=document.getElementById("statusHeadline"),sub=document.getElementById("statusSub");
@@ -791,7 +829,6 @@ function renderStats(exp,realizedPnl,totalPnl,unrealisedPnl){
     icon.textContent="📉";hl.textContent="Behind the line";hl.style.color="var(--bear)";
     sub.textContent="Claude is "+fINR(Math.abs(p))+" down after "+d2+" day"+(d2!==1?"s":"");
   }
-  renderRecon(p, rp, unrealisedPnl||0);
 }
 
 function renderSession(s){
