@@ -66,24 +66,17 @@ body{
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .refresh-btn{background:transparent;border:1px solid var(--border2);color:var(--blue);font-family:var(--body);font-size:.7rem;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;letter-spacing:.06em;transition:all .2s}
 .refresh-btn:hover{border-color:var(--blue);background:#4d9fff12}
-.share-btn{background:transparent;border:1px solid var(--neon-border);color:var(--neon);font-family:var(--body);font-size:.7rem;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;letter-spacing:.06em;transition:all .2s;display:flex;align-items:center;gap:5px}
-.share-btn:hover{background:var(--neon-dim)}
-.share-btn.copied{color:var(--gold);border-color:var(--gold-border)}
 
 /* ── WRAP ── */
 .wrap{padding:14px 12px;display:flex;flex-direction:column;gap:10px}
 
 /* ── BANNERS ── */
-/* Closed info strip */
-.closed-strip{display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.15)}
-.closed-strip-left{display:flex;align-items:center;gap:8px}
-.closed-strip-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
-.closed-strip-msg{font-size:.76rem;color:var(--text);font-weight:500}
-.closed-strip-next{font-size:.72rem;color:var(--sub);white-space:nowrap}
-/* Paused strip */
-.banner-paused{display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,61,90,0.06);border:1px solid rgba(255,61,90,0.15)}
-.banner-paused-dot{width:6px;height:6px;border-radius:50%;background:var(--bear);flex-shrink:0}
-.banner-paused-msg{font-size:.76rem;color:var(--text);font-weight:500}
+.banner{border-radius:var(--r);padding:18px;text-align:center;display:none;border:1px solid}
+.banner-closed{background:linear-gradient(135deg,#100a00,#080500);border-color:var(--gold-border)}
+.banner-paused{background:linear-gradient(135deg,#100008,#080005);border-color:var(--bear-border)}
+.banner-icon{font-size:1.8rem;margin-bottom:8px}
+.banner-title{font-family:var(--disp);font-size:1.2rem;letter-spacing:.08em;margin-bottom:4px}
+.banner-sub{font-size:.8rem;color:var(--sub);line-height:1.6}
 
 /* ── HERO ── */
 .hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
@@ -102,26 +95,15 @@ body{
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--kpi-accent,var(--border2));border-radius:var(--r) var(--r) 0 0}
 .kpi-help{position:absolute;top:8px;right:8px;width:17px;height:17px;border-radius:50%;background:transparent;border:1px solid var(--border2);color:var(--sub);font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-family:var(--body)}
 .kpi-help:hover,.kpi-help.nudge{border-color:var(--gold);color:var(--gold);box-shadow:0 0 8px var(--gold-dim)}
-/* Market Signal nudge — card border flash + icon glow */
-@keyframes card-signal{0%{border-color:rgba(245,166,35,0.6)}60%{border-color:rgba(245,166,35,0.6)}100%{border-color:var(--border)}}
-@keyframes icon-glow{0%,100%{border-color:var(--border2);color:var(--sub);box-shadow:none}40%,60%{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(245,166,35,0.35)}}
-.kpi-card.signalling{animation:card-signal 600ms ease-out forwards}
-@keyframes hero-breathe{
-  0%{border-color:var(--border);box-shadow:none}
-  30%{border-color:rgba(245,166,35,0.35);box-shadow:0 0 28px rgba(245,166,35,0.08),inset 0 0 28px rgba(245,166,35,0.03)}
-  60%{border-color:rgba(245,166,35,0.25);box-shadow:0 0 40px rgba(245,166,35,0.06),inset 0 0 40px rgba(245,166,35,0.02)}
-  100%{border-color:var(--border);box-shadow:none}
-}
-.hero.signalling{animation:hero-breathe 1800ms cubic-bezier(0.4,0,0.2,1) forwards}
-.kpi-help.nudge{animation:icon-glow 900ms ease-in-out forwards}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 var(--gold-border)}50%{box-shadow:0 0 0 4px var(--gold-border)}}
+.kpi-help.nudge{animation:nudge 1s ease-in-out 3}
 .kpi-label{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;padding-right:20px}
 .kpi-value{font-family:var(--disp);font-size:1.5rem;letter-spacing:.04em;line-height:1;margin-bottom:4px}
 .kpi-sub{font-size:.66rem;color:var(--sub);line-height:1.4}
 .bull{color:var(--neon)}.bear{color:var(--bear)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 
 /* ── STATUS CARD ── */
-.status-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;position:relative;overflow:hidden;transition:border-color .2s}
-.status-card.signalling{animation:card-signal 600ms ease-out forwards}
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;position:relative;overflow:hidden}
 .status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--status-accent,var(--border2))}
 .status-label{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;padding-right:20px}
 .status-icon{font-size:1.2rem;line-height:1;margin-bottom:4px}
@@ -157,14 +139,6 @@ body{
 .collapse-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
 .collapse-section.open .collapse-body{max-height:4000px}
 .collapse-inner{border-top:1px solid var(--border)}
-/* Scrollable sub-panels */
-.scroll-panel{max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-.scroll-panel::-webkit-scrollbar{width:2px}
-.scroll-panel::-webkit-scrollbar-track{background:transparent}
-.scroll-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-/* Scroll hint text */
-.scroll-hint{display:none;align-items:center;justify-content:center;gap:5px;padding:7px 0;border-top:1px solid var(--border);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);background:var(--card)}
-.scroll-hint svg{opacity:.5}
 
 /* ── CHART ── */
 .chart-wrap{padding:16px}
@@ -184,9 +158,9 @@ canvas{display:block;width:100%!important}
 /* ── SESSION ── */
 .session-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .session-row{display:flex;align-items:center;gap:10px}
-.sess-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:all .3s}
-.sess-done{background:var(--neon);box-shadow:0 0 7px var(--neon)}
-.sess-next{background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink 1.4s infinite}
+.sess-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sess-done{background:var(--neon);box-shadow:0 0 6px var(--neon)}
+.sess-next{background:var(--gold);animation:blink 1.4s infinite}
 .sess-pend{background:var(--muted);border:1px solid var(--border2)}
 .sess-text{flex:1;font-size:.82rem}
 .sess-time{font-size:.68rem;color:var(--sub)}
@@ -306,16 +280,9 @@ canvas{display:block;width:100%!important}
     <line x1="218" y1="12" x2="238" y2="72" stroke="url(#lg3)" stroke-width="2.5" stroke-linecap="round" opacity="0.5" filter="url(#lg4)"/>
     <rect x="4" y="124" width="230" height="2.5" rx="1.5" fill="url(#lg3)" opacity="0.55" filter="url(#lg4)"/>
   </svg>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="live"><div class="live-dot"></div>LIVE</div>
-      <button class="share-btn" id="shareBtn" onclick="shareApp()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Share
-      </button>
-      <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
-    </div>
-    <div id="lastUpdated" style="font-size:.58rem;color:var(--muted);letter-spacing:.04em;text-align:right">—</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="live"><div class="live-dot"></div>LIVE</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
   </div>
 </div>
 
@@ -323,19 +290,18 @@ canvas{display:block;width:100%!important}
 
   <div class="setup" id="setupBanner"></div>
 
-  <!-- Closed strip — one clean line -->
-  <div class="closed-strip" id="closedBanner">
-    <div class="closed-strip-left">
-      <div class="closed-strip-dot"></div>
-      <span class="closed-strip-msg" id="closedMsg">Weekend — no trade today</span>
-    </div>
-    <span class="closed-strip-next" id="closedNext">—</span>
+  <!-- Closed -->
+  <div class="banner banner-closed" id="closedBanner">
+    <div class="banner-icon">🔒</div>
+    <div class="banner-title" style="color:var(--gold)" id="closedTitle">Market Closed</div>
+    <div class="banner-sub" id="closedSub">NSE is closed. Claude resumes on the next market day.</div>
   </div>
 
-  <!-- Paused strip -->
-  <div class="banner-paused" id="pausedBanner">
-    <div class="banner-paused-dot"></div>
-    <span class="banner-paused-msg" id="pausedReason">Experiment concluded.</span>
+  <!-- Paused -->
+  <div class="banner banner-paused" id="pausedBanner">
+    <div class="banner-icon">⏸</div>
+    <div class="banner-title" style="color:var(--bear)">Experiment Concluded</div>
+    <div class="banner-sub" id="pausedReason">—</div>
   </div>
 
   <!-- HERO -->
@@ -345,19 +311,16 @@ canvas{display:block;width:100%!important}
     <div class="hero-value" id="heroValue">₹—</div>
     <div class="hero-pill up" id="heroPct">—</div>
     <div class="hero-start">Started at ₹10,000</div>
-    <div class="hero-sessions" id="heroSessions" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);position:relative">
-      <div style="display:flex;align-items:center;gap:5px">
-        <div class="sess-dot sess-pend" id="dotM"></div>
-        <span style="font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)" id="sessM">9:30 AM</span>
+    <div class="hero-sessions" id="heroSessions" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--sub)">
+        <div class="sess-dot" id="dotM"></div><span id="sessM">Morning</span>
       </div>
-      <div style="width:1px;height:10px;background:var(--border2)"></div>
-      <div style="display:flex;align-items:center;gap:5px">
-        <div class="sess-dot sess-pend" id="dotA"></div>
-        <span style="font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)" id="sessA">1:30 PM</span>
+      <div style="width:1px;height:12px;background:var(--border2)"></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--sub)">
+        <div class="sess-dot" id="dotA"></div><span id="sessA">Afternoon</span>
       </div>
-      <div style="width:1px;height:10px;background:var(--border2)"></div>
-      <div class="mkt-pill" id="sessMarket" style="font-size:.6rem;padding:2px 9px">—</div>
-      <button class="kpi-help" id="help-sessions" onclick="showTip('sessions')" style="position:absolute;right:-2px;top:50%;transform:translateY(-50%)">?</button>
+      <div style="width:1px;height:12px;background:var(--border2)"></div>
+      <div class="mkt-pill" id="sessMarket" style="font-size:.62rem">—</div>
     </div>
   </div>
 
@@ -435,14 +398,8 @@ canvas{display:block;width:100%!important}
       <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="collapse-body">
-      <div class="collapse-inner">
-        <div class="scroll-panel" id="posCard" onscroll="handleScroll('posCard','posHint')">
-          <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
-        </div>
-        <div class="scroll-hint" id="posHint">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          Scroll to see more
-        </div>
+      <div class="collapse-inner" id="posCard">
+        <div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>
       </div>
     </div>
   </div>
@@ -483,14 +440,8 @@ canvas{display:block;width:100%!important}
       <div class="collapse-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="collapse-body">
-      <div class="collapse-inner">
-        <div class="scroll-panel" id="tradesCard" onscroll="handleScroll('tradesCard','tradesHint')">
-          <div class="empty"><span class="empty-icon">▣</span>No trades yet.</div>
-        </div>
-        <div class="scroll-hint" id="tradesHint">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          Scroll to see more
-        </div>
+      <div class="collapse-inner" id="tradesCard" style="max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch">
+        <div class="empty"><span class="empty-icon">▣</span>No trades yet.</div>
       </div>
     </div>
   </div>
@@ -510,13 +461,7 @@ canvas{display:block;width:100%!important}
     </div>
     <div class="collapse-body">
       <div class="collapse-inner">
-        <div class="chart-wrap" style="position:relative">
-          <canvas id="chart" height="160"></canvas>
-          <div id="chartEmpty" style="display:none;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-            <div style="font-size:.72rem;color:var(--sub);text-align:center;line-height:1.6">Building history as the experiment runs.<br><span style="font-size:.66rem;color:var(--muted)">More data points appear each trading day.</span></div>
-          </div>
-        </div>
+        <div class="chart-wrap"><canvas id="chart" height="160"></canvas></div>
       </div>
     </div>
   </div>
@@ -612,8 +557,7 @@ const TIPS={
   unrealised:{title:"Unrealised P&L",body:"How much Claude's open positions are up or down right now. This is a paper gain or loss — it becomes real only when Claude sells. Think of it as: if Claude closed everything right this second, this is what it would gain or lose."},
   realised:{title:"Realised P&L",body:"The actual profit or loss from trades Claude has already closed. This number is locked in and will not change — it's the real, confirmed result of completed trades so far."},
   charges:{title:"Charges Paid",body:"Real Groww brokerage fees deducted on every trade — just like a real account. This includes brokerage, STT, stamp duty, exchange fees and GST. This is what makes the experiment honest, not just a simulation."},
-  status:{title:"Experiment Status",body:"A plain-English read on whether Claude is winning or losing compared to the ₹10,000 it started with. If it's ahead, Claude is making money. If it's behind, Claude is in a loss. This is the bottom line of the experiment."},
-  sessions:{title:"Why these times?",body:"These are Aaron's personal trading times — 9:30 AM when the market opens over breakfast, and 1:30 PM for a midday check over lunch. Claude trades at exactly these times every weekday, mimicking Aaron's own pattern but with an AI brain making every decision."}
+  status:{title:"Experiment Status",body:"A plain-English read on whether Claude is winning or losing compared to the ₹10,000 it started with. If it's ahead, Claude is making money. If it's behind, Claude is in a loss. This is the bottom line of the experiment."}
 };
 let idleTimer=null;
 let nudgeFired=false;
@@ -623,51 +567,15 @@ function startNudge(){
   idleTimer=setTimeout(()=>{
     if(nudgeFired) return;
     nudgeFired=true;
-    // Market Signal — card border flashes, then ? icon glows. Sequential, top to bottom.
-    // Explicitly build the card sequence: 5 kpi-cards + statusCard as 6th
-    const kpiCards=Array.from(document.querySelectorAll(".kpi-card"));
-    const statusCard=document.getElementById("statusCard");
-    const cards=[...kpiCards,...(statusCard?[statusCard]:[])];
-    const step=220; // ms between each card signal
-    cards.forEach((card,i)=>{
-      const btn=card.querySelector(".kpi-help");
+    // Serial light — one after another, top to bottom, fires once only
+    const btns=Array.from(document.querySelectorAll(".kpi-help"));
+    const delay=300, duration=750;
+    btns.forEach((b,i)=>{
       setTimeout(()=>{
-        // 1. Card border flashes sharp amber — like a price alert
-        card.classList.add("signalling");
-        setTimeout(()=>card.classList.remove("signalling"),650);
-        // 2. Icon glows softly 80ms after border flash
-        if(btn){
-          setTimeout(()=>{
-            btn.classList.add("nudge");
-            setTimeout(()=>btn.classList.remove("nudge"),900);
-          },80);
-        }
-      },i*step);
+        b.classList.add("nudge");
+        setTimeout(()=>b.classList.remove("nudge"),duration);
+      }, i*delay);
     });
-    // Session help fires after all 6 cards
-    const sessHelp=document.getElementById("help-sessions");
-    if(sessHelp){
-      const sessDelay=cards.length*step+120;
-      setTimeout(()=>{
-        sessHelp.classList.add("nudge");
-        setTimeout(()=>sessHelp.classList.remove("nudge"),900);
-      },sessDelay);
-    }
-    // Portfolio card + help fire last — entire hero card glows to close the sequence
-    const portHelp=document.getElementById("help-portfolio");
-    const heroCard=document.getElementById("heroCard");
-    if(portHelp&&heroCard){
-      const portDelay=cards.length*step+120+step;
-      setTimeout(()=>{
-        heroCard.classList.add("signalling");
-        setTimeout(()=>heroCard.classList.remove("signalling"),1800);
-        setTimeout(()=>{
-          portHelp.classList.add("nudge");
-          setTimeout(()=>portHelp.classList.remove("nudge"),900);
-        },80);
-      },portDelay);
-    }
-
   },5000);
 }
 ["touchstart","click","scroll"].forEach(e=>document.addEventListener(e,startNudge,{passive:true}));
@@ -686,9 +594,6 @@ function toggleSection(id){
   s.classList.toggle("open");
   if(id==="sec-chart"&&s.classList.contains("open")&&window._chartData)
     setTimeout(()=>drawChart(window._chartData.labels,window._chartData.values),50);
-  // Refresh fades when sections open — content now visible
-  if(id==="sec-positions") setTimeout(()=>updateHint("posCard","posHint"),450);
-  if(id==="sec-trades")    setTimeout(()=>updateHint("tradesCard","tradesHint"),450);
 }
 
 // ── CHART ─────────────────────────────────────────────────────
@@ -732,19 +637,7 @@ function drawChart(labels,values){
   ctx.beginPath();ctx.arc(ep.x,ep.y,8,0,Math.PI*2);ctx.fillStyle=lc+"30";ctx.fill();
   ctx.fillStyle="#3a4a65";ctx.font="9px JetBrains Mono";
   const step=Math.max(1,Math.floor(labels.length/4));
-  labels.forEach((l,i)=>{
-    if(i%step!==0&&i!==labels.length-1) return; // always draw last label
-    const lbl=l.slice(5); // "05-05"
-    const lw=ctx.measureText(lbl).width;
-    const isLast=i===labels.length-1;
-    const isFirst=i===0;
-    // First: left-align, Last: right-align, others: centre
-    let x=pad.l+i*xs;
-    if(isFirst) x=pad.l;
-    else if(isLast) x=pad.l+w-lw;
-    else x=pad.l+i*xs-lw/2;
-    ctx.fillText(lbl,x,H-4);
-  });
+  labels.forEach((l,i)=>{if(i%step===0)ctx.fillText(l.slice(5),pad.l+i*xs-8,H-4);});
 }
 
 // ── RENDER ────────────────────────────────────────────────────
@@ -795,21 +688,13 @@ function renderStats(exp,realizedPnl,totalPnl){
 
 function renderSession(s){
   const dotM=document.getElementById("dotM"),dotA=document.getElementById("dotA");
-  const sessM=document.getElementById("sessM"),sessA=document.getElementById("sessA");
-  // Morning dot — green if done, gold + pulsing if next, dim if pending
   if(dotM) dotM.className="sess-dot "+(s.morningDone?"sess-done":s.nextSession==="morning"?"sess-next":"sess-pend");
   if(dotA) dotA.className="sess-dot "+(s.afternoonDone?"sess-done":s.nextSession==="afternoon"?"sess-next":"sess-pend");
-  // Labels — time always shown, colour changes with state
-  if(sessM){
-    sessM.textContent="9:30 AM";
-    sessM.style.color=s.morningDone?"var(--neon)":s.nextSession==="morning"?"var(--gold)":"var(--sub)";
-  }
-  if(sessA){
-    sessA.textContent="1:30 PM";
-    sessA.style.color=s.afternoonDone?"var(--neon)":s.nextSession==="afternoon"?"var(--gold)":"var(--sub)";
-  }
+  const sessM=document.getElementById("sessM"),sessA=document.getElementById("sessA");
+  if(sessM) sessM.textContent=s.morningDone?"Morning ✓":"Morning 9:30";
+  if(sessA) sessA.textContent=s.afternoonDone?"Afternoon ✓":"Afternoon 1:30";
   const mkt=document.getElementById("sessMarket");
-  if(mkt){mkt.textContent=s.marketOpen?"Open":"Closed";mkt.className="mkt-pill "+(s.marketOpen?"mkt-open":"mkt-closed");}
+  if(mkt){mkt.textContent=s.marketOpen?"● Open":"● Closed";mkt.className="mkt-pill "+(s.marketOpen?"mkt-open":"mkt-closed");}
 }
 
 function renderAI(ins){
@@ -827,7 +712,7 @@ function renderAI(ins){
 function renderPositions(positions){
   const card=document.getElementById("posCard"),cnt=document.getElementById("posCount");
   cnt.textContent=(positions?.length||0)+" open";
-  if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>';updateHint("posCard","posHint");return;}
+  if(!positions?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📭</span>No open positions yet.</div>';return;}
   card.innerHTML=positions.map(p=>{
     const hasGain=p.unrealisedPnl>0.005,hasLoss=p.unrealisedPnl<-0.005;
     const gainCls=hasGain?"bull":hasLoss?"bear":"";
@@ -848,21 +733,7 @@ function renderPositions(positions){
       <div class="pos-sl">Auto-sells below ${fINR(p.stopLossLevel)}</div>
     </div>`;
   }).join("");
-  setTimeout(()=>updateHint("posCard","posHint"),50);
 }
-
-// Scroll fade — hide when user reaches bottom, show when content overflows
-function updateHint(panelId, hintId){
-  const panel=document.getElementById(panelId);
-  const hint=document.getElementById(hintId);
-  if(!panel||!hint) return;
-  requestAnimationFrame(()=>{
-    const hasOverflow=panel.scrollHeight>panel.clientHeight+4;
-    const atBottom=panel.scrollTop+panel.clientHeight>=panel.scrollHeight-8;
-    hint.style.display=(hasOverflow&&!atBottom)?"flex":"none";
-  });
-}
-function handleScroll(panelId, hintId){updateHint(panelId,hintId);}
 
 function plainReason(reason, action, isStop){
   if(isStop) return "Auto-sold — hit the safety exit price";
@@ -898,7 +769,6 @@ function renderTrades(trades){
   const card=document.getElementById("tradesCard"),cnt=document.getElementById("tradeCount");
   cnt.textContent=(trades?.length||0)+" trades";
   if(!trades?.length){card.innerHTML='<div class="empty"><span class="empty-icon">📋</span>No trades yet.</div>';return;}
-  setTimeout(()=>updateHint("tradesCard","tradesHint"),50);
   card.innerHTML=trades.slice(0,12).map(t=>{
     const isStop=t.autoStopLoss;
     const isBuy=t.action==="BUY";
@@ -965,27 +835,6 @@ function renderAuthorTrades(trades){
 document.getElementById("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")checkPin();});
 
 // ── MAIN ──────────────────────────────────────────────────────
-function shareApp(){
-  const url="https://neon-bull.pages.dev";
-  const text="What if AI traded the Indian market? I gave Claude ₹10,000 and zero human override. Watch it trade live.";
-  if(navigator.share){
-    navigator.share({title:"NEON BULL — AI Trading the Indian Market",text,url})
-      .catch(()=>{});
-  } else {
-    // Fallback — copy URL to clipboard
-    navigator.clipboard.writeText(url).then(()=>{
-      const btn=document.getElementById("shareBtn");
-      if(btn){
-        btn.textContent="✓ Copied";btn.className="share-btn copied";
-        setTimeout(()=>{
-          btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share';
-          btn.className="share-btn";
-        },2000);
-      }
-    }).catch(()=>{});
-  }
-}
-
 async function loadAll(){
   const btn=document.getElementById("refreshBtn");
   if(btn){btn.textContent="Refreshing…";btn.className="refresh-btn loading";btn.disabled=true;}
@@ -993,16 +842,12 @@ async function loadAll(){
   try{
     const portRes=await fetch(API+"/portfolio");
     const port=await portRes.json();
-    if(port.paused){document.getElementById("pausedBanner").style.display="flex";document.getElementById("pausedReason").textContent=port.pauseReason||"Experiment concluded.";}
+    if(port.paused){document.getElementById("pausedBanner").style.display="block";document.getElementById("pausedReason").textContent=port.pauseReason||"Experiment concluded.";}
     if(port.todaySession&&!port.todaySession.tradingDay){
-      const cb=document.getElementById("closedBanner");
-      cb.style.display="flex";
+      document.getElementById("closedBanner").style.display="block";
       const hn=port.todaySession.holidayName;
-      const nd=port.todaySession.nextTradingDate;
-      const nextLabel=nd?("Resumes "+new Date(nd+"T00:00:00Z").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"})):"Next trading day";
-      const isWeekend=!hn||hn==="Weekend";
-      document.getElementById("closedMsg").textContent=isWeekend?"Weekend — no trade today":hn+" — market holiday";
-      document.getElementById("closedNext").textContent=nextLabel;
+      if(hn&&hn!=="Weekend")document.getElementById("closedTitle").textContent=hn+" — Market Holiday";
+      document.getElementById("closedSub").textContent=hn&&hn!=="Weekend"?`NSE is closed for ${hn}. Claude resumes on the next business day.`:"NSE is closed on weekends. Claude resumes Monday morning.";
     }
     renderHero(port);renderKPIs(port);
     renderStats(port.experiment,port.realizedPnl,port.totalPnl);
@@ -1012,13 +857,7 @@ async function loadAll(){
       window._chartData={labels:port.snapshots.map(s=>s.date),values:port.snapshots.map(s=>s.totalValue)};
       document.getElementById("chartMeta").textContent=fPct(port.totalPnlPct)+" total return";
       const sec=document.getElementById("sec-chart");
-      // Show empty state if only 1 data point — not enough for a meaningful line
-      const chartEmpty=document.getElementById("chartEmpty");
-      const hasEnoughData=window._chartData.values.length>1;
-      if(chartEmpty){chartEmpty.style.display=hasEnoughData?"none":"flex";}
-      const chartEl=document.getElementById("chart");
-      if(chartEl){chartEl.style.display=hasEnoughData?"block":"none";}
-      if(hasEnoughData&&sec.classList.contains("open"))drawChart(window._chartData.labels,window._chartData.values);
+      if(sec.classList.contains("open"))drawChart(window._chartData.labels,window._chartData.values);
     }
   }catch(e){
     const b=document.getElementById("setupBanner");b.style.display="block";
@@ -1032,18 +871,6 @@ async function loadAll(){
   if(btn){
     btn.textContent="✓ Updated";btn.className="refresh-btn done";btn.disabled=false;
     setTimeout(()=>{btn.textContent="Refresh";btn.className="refresh-btn";},2000);
-    // Update last updated timestamp
-    const lu=document.getElementById("lastUpdated");
-    if(lu){
-      window._lastLoadTime=Date.now();
-      lu.textContent="Updated just now";
-      // Tick the "X mins ago" every minute
-      clearInterval(window._luTimer);
-      window._luTimer=setInterval(()=>{
-        const mins=Math.floor((Date.now()-window._lastLoadTime)/60000);
-        if(lu) lu.textContent=mins<1?"Updated just now":mins===1?"Updated 1 min ago":"Updated "+mins+" mins ago";
-      },30000);
-    }
   }
 }
 loadAll();
